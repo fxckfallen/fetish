@@ -5,14 +5,14 @@ interface Props {}
 
 
 export const Footer: React.FC<Props> = ({
-    
+
 }) => {
     const pathname = usePathname();
 
     if (pathname === "/") return <></>
 
     return(
-        <div className="fixed text-center bottom-[-105px] h-[150px] w-full bg-black transition-all duration-500 z-50 group hover:bottom-0">
+        <div className="fixed text-center bottom-[-105px] h-[150px] w-full bg-black transition-all duration-500 z-3 group hover:bottom-0">
             <div className="text-white mt-[10px] mb-[40px] opacity-100 transition-all duration-500 group-hover:opacity-0 group-hover:m-0 group-hover:mb-[0px]">
                 Open Footer
             </div>
@@ -37,6 +37,6 @@ export const Footer: React.FC<Props> = ({
                 </div>
             </div>
         </div>
-    ) 
-    
+    )
+
 };
