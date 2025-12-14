@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/navigation-menu"
 import { NavLink } from "./nav-link";
 
-
 interface Props {}
 
 export const ProfileButton: React.FC<Props> = () => {
@@ -68,10 +67,10 @@ export const ProfileButton: React.FC<Props> = () => {
           <NavigationMenuContent>
             <NavigationMenuLink>
               <ul className="p-4">
-                  <NavLink url="/wishlist">Wish List</NavLink>
-                  <NavLink url="/repass">Change Password</NavLink>
-                  <NavLink url="/logout">Logout</NavLink>
-                </ul>
+                <NavLink url="/wishlist">Wish List</NavLink>
+                <NavLink url="/repass">Change Password</NavLink>
+                <NavLink url="/logout">Logout</NavLink>
+              </ul>
             </NavigationMenuLink>
           </NavigationMenuContent>
         </NavigationMenuItem>
