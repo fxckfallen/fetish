@@ -65,18 +65,15 @@ export const ProfileButton: React.FC<Props> = () => {
             </Link>
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <NavigationMenuLink>
               <ul className="p-4">
                 <NavLink url="/wishlist">Wish List</NavLink>
                 <NavLink url="/repass">Change Password</NavLink>
                 <NavLink url="/logout">Logout</NavLink>
               </ul>
-            </NavigationMenuLink>
           </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
-
   ) : (
     <Link
       href={"/auth"}
