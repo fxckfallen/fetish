@@ -13,77 +13,82 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { editUser } from "@/api/users";
 import { useUser } from "@/hooks/useUser";
+import { editUser } from "@/lib/dummy_api";
+import { toast } from "sonner";
 
-interface Props {
-
-}
-
-export const ProfileInfoBlock: React.FC<Props> = (
- 
-) => {
+export const ProfileInfoBlock: React.FC = () => {
   const [open, setOpen] = useState(false);
-  const {user, setUser} = useUser();
-  
-  const [formData, setFormData] = useState({
-  id: 0,
-  first_name: '',
-  last_name: '',
-  middle_name: '',
-  email: '',
-  phone: '',
-});
+  const { user, setUser } = useUser();
 
-useEffect(() => {
-  if (user && user.id) {
-    setFormData({
-      id: user.id,
-      first_name: user.first_name || '',
-      last_name: user.last_name || '',
-      middle_name: user.middle_name || '',
-      email: user.email || '',
-      phone: user.phone || '',
-    });
-  }
-}, [user]);
+  const [formData, setFormData] = useState({
+    id: 0,
+    first_name: '',
+    last_name: '',
+    middle_name: '',
+    email: '',
+    phone: '',
+  });
+
+  useEffect(() => {
+    if (user && user.id) {
+      setFormData({
+        id: user.id,
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
+        middle_name: user.middle_name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+      });
+    }
+  }, [user]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  
+  const confirmEdit = () => {
+    if (!user) return;
 
-  const confirmEdit = async (formData: any) => {
-    const res = await editUser(formData);
-    setUser(res);
+    const updatedUser = editUser(
+      user.token,
+      formData.first_name,
+      formData.last_name,
+      formData.middle_name,
+      formData.email,
+      formData.phone
+    );
+
+    setUser(updatedUser);
+    toast("Profile updated successfully!");
     setOpen(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild >
+      <DialogTrigger asChild>
         <div className="w-full md:w-[50%] p-6 h-fit border rounded hover:border-black transition-all duration-300 cursor-pointer">
           <p className="mb-2">Personal information</p>
           <div className="w-full flex items-center">
             <p className="font-semibold mr-2">First Name:</p>
-            <p>{user.first_name || '-'}</p>
+            <p>{user?.first_name || '-'}</p>
           </div>
           <div className="w-full flex items-center">
             <p className="font-semibold mr-2">Last Name:</p>
-            <p>{user.last_name || '-'}</p>
+            <p>{user?.last_name || '-'}</p>
           </div>
           <div className="w-full flex items-center">
             <p className="font-semibold mr-2">Middle Name:</p>
-            <p>{user.middle_name || '-'}</p>
+            <p>{user?.middle_name || '-'}</p>
           </div>
           <div className="w-full flex items-center">
             <p className="font-semibold mr-2">Email:</p>
-            <p>{user.email || '-'}</p>
+            <p>{user?.email || '-'}</p>
           </div>
           <div className="w-full flex items-center">
             <p className="font-semibold mr-2">Phone:</p>
-            <p>{user.phone || '-'}</p>
+            <p>{user?.phone || '-'}</p>
           </div>
         </div>
       </DialogTrigger>
@@ -110,7 +115,7 @@ useEffect(() => {
           ))}
         </div>
         <DialogFooter>
-          <Button onClick={() =>  confirmEdit(formData)}>Save changes</Button>
+          <Button onClick={confirmEdit}>Save changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

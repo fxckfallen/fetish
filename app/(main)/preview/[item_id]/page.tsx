@@ -5,107 +5,129 @@ import { Separator } from "@/components/ui/separator";
 import ProductCarousel from "@/components/shared/product-carousel";
 import ProductImageSlider from "@/components/shared/ProductImageSlider";
 import { AddToCart } from "@/components/shared/add-to-cart";
+import { getOffer } from "@/lib/dummy_api";
 
-export default function Home() {
-  // Управляем, развернут ли текст
+interface PageProps {
+    params: Promise<{ item_id: string }>
+}
+
+export default function Home({ params }: PageProps) {
+  const [offer, setOffer] = useState<any>(null);
   const [descExpanded, setDescExpanded] = useState(false);
-  // Храним значение maxHeight для плавного раскрытия/сворачивания
   const [maxHeight, setMaxHeight] = useState("48px");
-
-  // Ссылка на контейнер с текстом, чтобы вычислять полную высоту содержимого
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const descRef = useRef<HTMLDivElement>(null);
 
-  // Длинный текст описания
-  const description = `
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus eaque vel,
-    vero deleniti, porro at et facilis eos saepe sit earum incidunt dignissimos.
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut impedit
-    cupiditate officia! Perspiciatis suscipit, nulla vitae laborum, nemo sequi
-    quia molestiae repellendus magni illo nam minima tempore placeat. Qui, numquam.
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quae, voluptatum.
-  `;
+  // Разворачиваем Promise params
+  useEffect(() => {
+    const loadOffer = async () => {
+      const { item_id } = await params;
+      const id = parseInt(item_id, 10);
+      const fetchedOffer = getOffer(id);
 
-  // При загрузке и переключении состояния развернутости
+      if (fetchedOffer) {
+        setOffer(fetchedOffer);
+
+        // Устанавливаем дефолтный размер: первый доступный с qty > 0
+        const availableSize = fetchedOffer.sizes?.find((s: any) => s.qty > 0);
+        setSelectedSize(availableSize ? availableSize.size : null);
+      }
+    };
+    loadOffer();
+  }, [params]);
+
+  // Управление maxHeight для плавного раскрытия описания
   useEffect(() => {
     if (!descRef.current) return;
 
     if (descExpanded) {
-      // Устанавливаем высоту равной полной высоте контента
       setMaxHeight(`${descRef.current.scrollHeight}px`);
     } else {
-      // Примерно 3 строки текста (подбирается под ваш шрифт)
       setMaxHeight("48px");
     }
-  }, [descExpanded]);
+  }, [descExpanded, offer]);
 
-  // Обработчик переключения описания
-  const toggleDescription = () => {
-    setDescExpanded(!descExpanded);
-  };
+  const toggleDescription = () => setDescExpanded(!descExpanded);
+
+  if (!offer) return <div>Loading...</div>;
+
+  // Проверка наличия на складе
+  const inStock =
+    offer.sizes?.some((s: any) => s.qty > 0) ?? false;
 
   return (
     <main className="w-full h-screen flex flex-col items-center bg-white text-black overflow-x-hidden">
       <div className="w-full flex flex-col lg:flex-row items-center justify-center gap-x-10 p-10">
         {/* Слайдер изображений слева */}
-        <ProductImageSlider />
+        <ProductImageSlider images={offer.images} />
 
         {/* Правая часть (описание, размеры, кнопки, слайдер «You may also like») */}
         <div className="flex flex-col h-full max-w-full lg:max-w-[30%]">
           {/* Название и цена */}
-          <p className="text-2xl font-medium">Shuba</p>
-          <p className="text-lg font-bold mt-2">$65</p>
+          <p className="text-2xl font-medium">{offer.title}</p>
+          <p className="text-lg font-bold mt-2">${offer.price}</p>
 
-          {/* Описание с затуханием и анимацией раскрытия */}
+          {/* Описание с затуханием и анимацией */}
           <div className="text-sm text-gray-600 mt-4">
-            {/* Контейнер для текста с ограничением высоты */}
             <div
               ref={descRef}
               className="relative overflow-hidden transition-all duration-500 ease-in-out"
               style={{ maxHeight }}
             >
-              {description}
-              {/* Градиент, если текст не развернут */}
+              {offer.description}
               {!descExpanded && (
                 <div className="pointer-events-none absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-white to-transparent" />
               )}
             </div>
-            {/* Кнопка «Show more / Show less» */}
             <button onClick={toggleDescription} className="text-sm underline mt-2">
               {descExpanded ? "Show less" : "Show more"}
             </button>
           </div>
 
-          {/* Блок кнопок выбора размера */}
+          {/* Блок выбора размеров */}
           <div className="flex justify-between mt-4 items-center">
             <div className="flex space-x-2">
-              <button className="transition-all border border-gray-300 hover:border-black px-4 py-1 text-sm rounded-lg">
-                XS
-              </button>
-              <button className="transition-all border border-gray-300 hover:border-black px-4 py-1 text-sm rounded-lg">
-                S
-              </button>
-              <button className="transition-all border border-gray-300 hover:border-black px-4 py-1 text-sm rounded-lg">
-                M
-              </button>
+              {offer.sizes?.length ? (
+                offer.sizes.map((s: any) => (
+                  <button
+                    key={s.size}
+                    disabled={s.qty <= 0}
+                    className={`transition-all border px-4 py-1 text-sm rounded-lg ${
+                      selectedSize === s.size
+                        ? "border-black"
+                        : "border-gray-300 hover:border-black"
+                    } ${s.qty <= 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+                    onClick={() => s.qty > 0 && setSelectedSize(s.size)}
+                  >
+                    {s.size}
+                  </button>
+                ))
+              ) : (
+                <span className="text-sm">Out of Stock</span>
+              )}
             </div>
             <div>
               <button className="text-sm underline">Size Guide</button>
             </div>
           </div>
 
-          {/* Объединённый блок кнопок Add to Cart и Add to Wishlist */}
+          {/* Кнопки Add to Cart и Add to Wishlist */}
           <div className="mt-4">
             <div className="inline-flex rounded-lg overflow-hidden">
-              <AddToCart />
+              <AddToCart id = {offer.id} size={selectedSize} disabled={!inStock} />
               <button className="transition-all px-6 py-2 text-sm border border-gray-300 hover:border-black rounded-r-lg -ml-px">
                 Add to Wishlist
               </button>
             </div>
           </div>
 
+          {/* {!inStock && (
+            <p className="text-red-600 mt-2">Out of Stock</p>
+          )} */}
+
           <Separator className="my-10 w-full" />
 
-          {/* Слайдер товаров (компонент «You may also like») */}
+          {/* Слайдер «You may also like» */}
           <ProductCarousel />
         </div>
       </div>

@@ -9,11 +9,13 @@ import { CustomInput } from "@/components/shared/custom-input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState } from "react";
-import { TEST_USER } from "@/lib/constants";
+
 import { NovaPostSearch } from "@/components/shared/novapost-search";
+import { useUser } from "@/hooks/useUser";
 export default function Home() {
     const [value, setValue] = useState('novapost');
-    const user = TEST_USER;
+
+    const { user } = useUser()
 
     return (
         <div className="w-full pt-[2em]">
@@ -23,28 +25,28 @@ export default function Home() {
             </CheckoutEditBox>
             <Section title="Contact">
                 <CheckoutRadioBox defaultValue="novapost" onValueChange={setValue}>
-                    {user.country === 'Ukraine' ? 
+                    {user.country === 'Ukraine' ?
                         <CheckoutRadioBoxItem title="Nova Poshta (Express)" value="novapost" price={10} />
-                        : 
+                        :
                         <>
                             <CheckoutRadioBoxItem title="Nova Poshta (Express)" value="novapost" price={50} />
                             <CheckoutRadioBoxItem title="Ukr Poshta (Standard)" value="ukrpost" price={10} />
                         </>
                     }
-                    
+
                 </CheckoutRadioBox>
             </Section>
-                {value === 'novapost' ? 
+                {value === 'novapost' ?
                     <Section title="Additional Information">
-                        {user.country === 'Ukraine' ? 
+                        {user.country === 'Ukraine' ?
                             <NovaPostSearch city={user.city} />
                          :
                         <div className="flex w-full">
                             <CustomInput type="text" className="placeholder:tracking-normal " placeholder="Enter № and address of NovaPost department"/>
                             <Button className="p-[1.7em] ml-[0.8571428571em] tracking-normal">Save</Button>
-                        </div>   
+                        </div>
                     }
-                        
+
                     </Section>
                     : null
                 }

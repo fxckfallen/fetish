@@ -13,18 +13,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { editUser } from "@/api/users";
 import { useUser } from "@/hooks/useUser";
+import { editUser } from "@/lib/dummy_api";
+import { toast } from "sonner";
 
-interface Props {
-
-}
-
-export const ProfileShippingBlock: React.FC<Props> = (
-
-) => {
+export const ProfileShippingBlock: React.FC = () => {
   const [open, setOpen] = useState(false);
-    const {user, setUser} = useUser();
+  const { user, setUser } = useUser();
+
   const [formData, setFormData] = useState({
     id: 0,
     zip_code: "",
@@ -33,6 +29,7 @@ export const ProfileShippingBlock: React.FC<Props> = (
     house_number: "",
     apartment_number: "",
   });
+
   useEffect(() => {
     if (user && user.id) {
       setFormData({
@@ -45,16 +42,34 @@ export const ProfileShippingBlock: React.FC<Props> = (
       });
     }
   }, [user]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
-  
-    const confirmEdit = async (formData: any) => {
-      const res = await editUser(formData);
-      setUser(res);
-      setOpen(false);
-    };
+
+  const confirmEdit = () => {
+    if (!user) return;
+
+    const updatedUser = editUser(
+      user.token,
+      undefined, // first_name
+      undefined, // last_name
+      undefined, // middle_name
+      undefined, // email
+      undefined, // phone
+      undefined, // country
+      formData.zip_code,
+      formData.city,
+      formData.street,
+      formData.house_number,
+      formData.apartment_number
+    );
+
+    setUser(updatedUser);
+    toast("Shipping info updated successfully!");
+    setOpen(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -63,35 +78,34 @@ export const ProfileShippingBlock: React.FC<Props> = (
           <p className="mb-2">Delivery information</p>
           <div className="w-full flex items-center">
             <p className="font-semibold mr-2">Zip/Postal code:</p>
-            <p>{user.zip_code || '-'}</p>
+            <p>{user?.zip_code || '-'}</p>
           </div>
           <div className="w-full flex items-center">
             <p className="font-semibold mr-2">City:</p>
-            <p>{user.city || '-'}</p>
+            <p>{user?.city || '-'}</p>
           </div>
           <div className="w-full flex items-center">
             <p className="font-semibold mr-2">Street address:</p>
-            <p>{user.street || '-'}</p>
+            <p>{user?.street || '-'}</p>
           </div>
           <div className="w-full flex items-center">
             <p className="font-semibold mr-2">House Number:</p>
-            <p>{user.house_number || '-'}</p>
+            <p>{user?.house_number || '-'}</p>
           </div>
           <div className="w-full flex items-center">
             <p className="font-semibold mr-2">Apartment Number:</p>
-            <p>{user.apartment_number || '-'}</p>
+            <p>{user?.apartment_number || '-'}</p>
           </div>
         </div>
       </DialogTrigger>
       <DialogContent className="max-w-[90vw] lg:max-w-[55vw]">
         <DialogHeader>
-          <DialogTitle>Edit Personal Info</DialogTitle>
+          <DialogTitle>Edit Shipping Info</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            Make changes to your delivery info here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4 grid-cols-1 lg:grid-cols-2">
-          
           {["zip_code", "city", "street", "house_number", "apartment_number"].map((field) => (
             <div key={field} className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor={field} className="text-right capitalize whitespace-nowrap">
@@ -107,7 +121,7 @@ export const ProfileShippingBlock: React.FC<Props> = (
           ))}
         </div>
         <DialogFooter>
-          <Button onClick={() =>  confirmEdit(formData)}>Save changes</Button>
+          <Button onClick={confirmEdit}>Save changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

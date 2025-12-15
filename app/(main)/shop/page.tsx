@@ -1,22 +1,15 @@
 import { Offer } from "@/components/shared/Offer";
-import { SearchBar } from "@/components/shared/searchbar";
-
+import { searchOffers } from "@/lib/dummy_api";
 
 export default function Home() {
+  let offers = searchOffers();
   return (
     <main className="w-full h-full  px-6 mt-4 .no-scrollbar">
       <div className="flex gap-3 flex-wrap">
-        <Offer id={1} title="asd" price={100} type={1} image="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.11Min.jpg" image2="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.32Min.jpg" liked />
-        <Offer id={1} title="asd" price={100} type={1} image="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.11Min.jpg" image2="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.32Min.jpg" liked />
-        <Offer id={1} title="asd" price={100} type={1} image="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.11Min.jpg" image2="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.32Min.jpg" liked />
-        
-        <Offer id={1} title="asd" price={100} type={2} image="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.11Min.jpg" image2="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.32Min.jpg" liked />
-        <Offer id={1} title="asd" price={100} type={2} image="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.11Min.jpg" image2="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.32Min.jpg" liked />
-
-        <Offer id={1} title="asd" price={100} type={1} image="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.11Min.jpg" image2="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.32Min.jpg" liked />
-        <Offer id={1} title="asd" price={100} type={1} image="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.11Min.jpg" image2="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.32Min.jpg" liked />
-        <Offer id={1} title="asd" price={100} type={1} image="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.11Min.jpg" image2="https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.32Min.jpg" liked />
-        </div>
+        {offers.map(offer => (
+          <Offer key={offer.id} id={offer.id} title={offer.description} price={offer.price} type={2} image={offer.images[0]} image2={offer.images[1]} liked={false}/>
+        ))}
+       </div>
     </main>
   )
 }

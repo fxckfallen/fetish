@@ -6,17 +6,13 @@ import { usePathname } from "next/navigation";
 import { User as UserIcon } from "lucide-react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useUser } from "@/hooks/useUser";
-import { getUser } from "@/api/users";
-import { useEffect, useState } from "react";
+
 import {
   NavigationMenu,
   NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  NavigationMenuViewport,
 } from "@/components/ui/navigation-menu"
 import { NavLink } from "./nav-link";
 
@@ -25,29 +21,10 @@ interface Props {}
 export const ProfileButton: React.FC<Props> = () => {
   const path = usePathname();
   const isMobile = useIsMobile();
-  const { user, setUser } = useUser();
+  const { user } = useUser();
 
-  const [id, setId] = useState<number | null>(null);
 
-  // читаем localStorage только на клиенте
-  useEffect(() => {
-    const storedId = localStorage.getItem("id");
-    if (storedId) {
-      setId(parseInt(storedId, 10));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (id && id !== 0) {
-      getUser(id).then((res) => {
-        setUser(res);
-      });
-    }
-  }, [id, setUser]);
-
-  const isAuth = id !== null && id !== 0;
-
-  return isAuth ? (
+  return user !== null ? (
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>

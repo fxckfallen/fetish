@@ -2,15 +2,11 @@
 
 import { useState } from "react";
 
-export default function ProductImageSlider() {
-  // Массив с несколькими изображениями товара
-  const images = [
-    "https://iamyourfetish.com.ua/static/img_offer/2025-01-30%2022.36.17.jpg",
-    "https://iamyourfetish.com.ua/static/img_offer/9hw6s0P9XylEcZVZRYKnP202jKi5lh7N.jpg",
-    "https://iamyourfetish.com.ua/static/img_offer/2024-11-02%2021.54.11Min.jpg",
-  ];
+interface ProductImageSliderProps {
+  images: string[];
+}
 
-  // Текущее изображение
+export default function ProductImageSlider({ images }: ProductImageSliderProps) {  // Текущее изображение
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Переход к следующему изображению
@@ -75,8 +71,8 @@ export default function ProductImageSlider() {
         {images.map((img, i) => (
           <div key={i} className="w-[500px] flex-shrink-0 relative">
             <img
-              src={img}
               alt={`Product Image ${i}`}
+              src={img}
               className="w-full h-auto rounded-lg transition-transform duration-300 group-hover:scale-105"
             />
           </div>
